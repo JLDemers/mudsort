@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<view icon="10706" title="mudsort" width="300" height="275">
+<view icon="10706" title="mudsort" width="300" height="300">
   <control progid="DecalControls.Notebook" name="nbMain">
   <page label="Sort">
     <control progid="DecalControls.FixedLayout" clipped="">
@@ -51,9 +51,12 @@
         <option text="Unknown"/>
 		<option text="Custom"/>
       </control>
+
+      <control progid="DecalControls.StaticText"                            left="5"    top="180" width="95"  height="20" text="Item Name Filter" />
+      <control progid="DecalControls.Edit"        name="edtNameFilter"     left="105"  top="180" width="190" height="20" text="" />
       
-      <control progid="DecalControls.Progress"    name="prgProgressBar"     left="5"    top="180" width="290" height="20" value="0" maxvalue="100" fillcolor="0" />
-      <control progid="DecalControls.PushButton"  name="btnActivate"        left="5"    top="205" width="290" height="20" value="0" text="Activate" />
+      <control progid="DecalControls.Progress"    name="prgProgressBar"     left="5"    top="205" width="290" height="20" value="0" maxvalue="100" fillcolor="0" />
+      <control progid="DecalControls.PushButton"  name="btnActivate"        left="5"    top="230" width="290" height="20" value="0" text="Activate" />
     </control>
   </page>
   <page label="Build">

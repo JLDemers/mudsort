@@ -29,6 +29,7 @@ public class PluginCore : PluginBase
     public int containerDestSlot = 0;
     public int containerSource = 0;
     public string ocfilter = "";
+    public string namefilter = "";
 
     private State CURRENT_STATE = State.IDLE;
     private ArrayList sortFlags = new ArrayList();
@@ -56,12 +57,11 @@ public class PluginCore : PluginBase
             foreach (WorldObject worldObject in Core.WorldFilter.GetByContainer(containerSource))
             {
                 // Check if the item is not equipped, has a valid slot, is not a Foci object,
-                // and matches the selected object class filter (if applicable)
+                // and matches the selected source filters.
                 if (worldObject.Values(LongValueKey.EquippedSlots, 0) == 0
                         && Core.WorldFilter[worldObject.Id].Values(LongValueKey.Slot) != -1
                         && !worldObject.ObjectClass.Equals(ObjectClass.Foci)
-                        && (MainView.cmbObjClassFilters.Current == 0
-                            || (MainView.cmbObjClassFilters.Current != 0 && worldObject.ObjectClass.ToString().ToLower().StartsWith(ocfilter.ToLower()))))
+                        && MatchesSourceFilters(worldObject, true))
                 {
                     // Add the world object to the sort list
                     addWorldObject(sortList, worldObject, false);
@@ -101,6 +101,66 @@ public class PluginCore : PluginBase
         {
             toList.Add(worldObject);
         }
+    }
+
+    private bool MatchesSourceFilters(WorldObject worldObject, bool includeUnidentifiedNameMatches)
+    {
+        return MatchesObjectClassFilter(worldObject) && MatchesNameFilter(worldObject, includeUnidentifiedNameMatches);
+    }
+
+    private bool MatchesObjectClassFilter(WorldObject worldObject)
+    {
+        return MainView.cmbObjClassFilters.Current == 0
+            || worldObject.ObjectClass.ToString().StartsWith(ocfilter, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private bool MatchesNameFilter(WorldObject worldObject, bool includeUnidentifiedNameMatches)
+    {
+        if (string.IsNullOrWhiteSpace(namefilter))
+        {
+            return true;
+        }
+
+        if (!worldObject.HasIdData)
+        {
+            return includeUnidentifiedNameMatches;
+        }
+
+        return GetItemName(worldObject).IndexOf(namefilter, StringComparison.OrdinalIgnoreCase) >= 0;
+    }
+
+    private string GetItemName(WorldObject worldObject)
+    {
+        if (worldObject.HasIdData)
+        {
+            string identifiedName = worldObject.Values(StringValueKey.Name);
+            if (!string.IsNullOrEmpty(identifiedName))
+            {
+                return identifiedName;
+            }
+        }
+
+        return worldObject.Name ?? string.Empty;
+    }
+
+    private void ApplyIdentifiedNameFilter()
+    {
+        if (string.IsNullOrWhiteSpace(namefilter))
+        {
+            return;
+        }
+
+        ArrayList filteredSortList = new ArrayList();
+        foreach (WorldObject worldObject in sortList)
+        {
+            if (MatchesNameFilter(worldObject, false))
+            {
+                filteredSortList.Add(worldObject);
+            }
+        }
+
+        sortList = filteredSortList;
+        Util.WriteToChat(sortList.Count + " items matched the item name filter...");
     }
 
     public void cancel()
@@ -208,6 +268,8 @@ public class PluginCore : PluginBase
                 }
                 if (!identifying)
                 {
+                    ApplyIdentifiedNameFilter();
+                    MainView.prgProgressBar.Max = sortList.Count;
                     CURRENT_STATE = State.BUILDING_LIST;
                     MainView.prgProgressBar.Position = MainView.prgProgressBar.Max;
                 }
@@ -508,6 +570,25 @@ public class PluginCore : PluginBase
             Util.WriteToChat("/ms set flags (sort flag string) - sets the sort string to the given argument");
             Util.WriteToChat("/ms set ocfilter (object class string) - sets the object class filter to the given argument");
             Util.WriteToChat("/ms clear ocfilter - clears the object class filter");
+            Util.WriteToChat("/ms set namefilter (item name text) - sets the item name filter to the given argument");
+            Util.WriteToChat("/ms clear namefilter - clears the item name filter");
+            return true;
+        }
+
+        if (msCommand.Equals("/ms set namefilter") || msCommand.Equals("/ms clear namefilter"))
+        {
+            Util.WriteToChat("Clearing Item Name Filter.");
+            namefilter = "";
+            MainView.edtNameFilter.Text = "";
+            return true;
+        }
+
+        if (msCommand.StartsWith("/ms set namefilter "))
+        {
+            msCommand = msCommand.Substring("/ms set namefilter ".Length).Trim();
+            Util.WriteToChat("Setting Item Name Filter: " + msCommand);
+            namefilter = msCommand;
+            MainView.edtNameFilter.Text = msCommand;
             return true;
         }
 

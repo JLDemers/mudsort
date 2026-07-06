@@ -20,6 +20,7 @@ class MainView : IDisposable
     public static ControlGroup controls;
     public static HudTextBox edtDestContainer;
     public static HudTextBox edtInsertion;
+    public static HudTextBox edtNameFilter;
     public static HudTextBox edtSavedSortString1;
     public static HudTextBox edtSavedSortString2;
     public static HudTextBox edtSavedSortString3;
@@ -51,6 +52,7 @@ class MainView : IDisposable
         edtSourceContainer  = View != null ? (HudTextBox)     View["edtSourceContainer"]    : new HudTextBox();
         edtDestContainer    = View != null ? (HudTextBox)     View["edtDestContainer"]      : new HudTextBox();
         edtInsertion        = View != null ? (HudTextBox)     View["edtInsertion"]          : new HudTextBox();
+        edtNameFilter       = View != null ? (HudTextBox)     View["edtNameFilter"]         : new HudTextBox();
         cmbObjClassFilters  = View != null ? (HudCombo)       View["cmbObjClassFilters"]    : new HudCombo(new ControlGroup());
         edtSortString       = View != null ? (HudTextBox)     View["edtSortString"]         : new HudTextBox();
         prgProgressBar      = View != null ? (HudProgressBar) View["prgProgressBar"]        : new HudProgressBar();
@@ -76,6 +78,7 @@ class MainView : IDisposable
         VirindiViewService.TooltipSystem.AssociateTooltip(View["btnPasteSortString"], "Pastes the contents of your clipboard into the box below");
         VirindiViewService.TooltipSystem.AssociateTooltip(edtSortString, "The Sort String to use when sorting. (Use Build tab to create a new one)");
         VirindiViewService.TooltipSystem.AssociateTooltip(cmbObjClassFilters, "Limit sorting to specific types of items");
+        VirindiViewService.TooltipSystem.AssociateTooltip(edtNameFilter, "Limit sorting to items whose names contain this text");
         VirindiViewService.TooltipSystem.AssociateTooltip(btnActivate, "Begins the sorting process. Press again to cancel.");
 
         VirindiViewService.TooltipSystem.AssociateTooltip(cmbSortListFilters, "Limit filter based on key type");
@@ -108,6 +111,7 @@ class MainView : IDisposable
             chkThinkWhenDone.Checked   = Properties.Settings.Default.ThinkWhenDone;
             chkReverseSortList.Checked = Properties.Settings.Default.ReverseSortList;
             edtSortString.Text         = Properties.Settings.Default.DefaultSortString;
+            edtNameFilter.Text         = PluginCore.getInstance().namefilter;
             edtSavedSortString1.Text   = Properties.Settings.Default.SavedSortString1;
             edtSavedSortString2.Text   = Properties.Settings.Default.SavedSortString2;
             edtSavedSortString3.Text   = Properties.Settings.Default.SavedSortString3;
@@ -156,6 +160,11 @@ class MainView : IDisposable
                     Properties.Settings.Default.Save();
                 }
                 catch (Exception ex) { Util.LogError(ex); }
+            };
+
+            View["edtNameFilter"].KeyEvent += (s, e) =>
+            {
+                PluginCore.getInstance().namefilter = ((HudTextBox)View["edtNameFilter"]).Text.Trim();
             };
             
             View["btnCopySortString"].Hit += (s, e) =>

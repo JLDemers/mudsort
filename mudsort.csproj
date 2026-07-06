@@ -14,6 +14,13 @@
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
+  <PropertyGroup>
+    <DecalInstallDir Condition="Exists('C:\Games\Decal\Decal.Adapter.dll')">C:\Games\Decal</DecalInstallDir>
+    <DecalInstallDir Condition="'$(DecalInstallDir)' == '' and Exists('C:\Games\ThwargLauncher\Decal.Adapter.dll')">C:\Games\ThwargLauncher</DecalInstallDir>
+    <DecalPiaDir Condition="Exists('C:\Games\Decal\.NET 4.0 PIA\Decal.Interop.Core.DLL')">C:\Games\Decal\.NET 4.0 PIA</DecalPiaDir>
+    <VirindiInstallDir Condition="Exists('C:\Games\VirindiPlugins\VirindiViewService\VirindiViewService.dll')">C:\Games\VirindiPlugins\VirindiViewService</VirindiInstallDir>
+    <VirindiInstallDir Condition="'$(VirindiInstallDir)' == '' and Exists('C:\Games\ThwargLauncher\VirindiViewService.dll')">C:\Games\ThwargLauncher</VirindiInstallDir>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
@@ -78,7 +85,7 @@
   <ItemGroup>
     <Reference Include="Decal.Adapter, Version=2.9.7.5, Culture=neutral, PublicKeyToken=bd1c8ce002ce221e, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Program Files (x86)\Decal 3.0\Decal.Adapter.dll</HintPath>
+      <HintPath>$(DecalInstallDir)\Decal.Adapter.dll</HintPath>
       <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
     <Reference Include="System" />
@@ -87,7 +94,19 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="VirindiViewService">
-      <HintPath>E:\ac\decal\plugins\VirindiViewService\VirindiViewService.dll</HintPath>
+      <HintPath>$(VirindiInstallDir)\VirindiViewService.dll</HintPath>
+    </Reference>
+    <Reference Include="Decal.Interop.Core">
+      <HintPath>$(DecalPiaDir)\Decal.Interop.Core.DLL</HintPath>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="Decal.Interop.Filters">
+      <HintPath>$(DecalPiaDir)\Decal.Interop.Filters.DLL</HintPath>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="Decal.Interop.Net">
+      <HintPath>$(DecalPiaDir)\Decal.Interop.Net.DLL</HintPath>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -111,35 +130,6 @@
     <EmbeddedResource Include="mainView.xml">
       <SubType>Designer</SubType>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <COMReference Include="Decal">
-      <Guid>{FF7F5F6D-34E0-4B6F-B3BB-8141DE2EF732}</Guid>
-      <VersionMajor>2</VersionMajor>
-      <VersionMinor>0</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>primary</WrapperTool>
-      <Isolated>False</Isolated>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-    </COMReference>
-    <COMReference Include="DecalFilters">
-      <Guid>{DA16DAA9-7F16-45D9-A59F-8C45A7F2ACB1}</Guid>
-      <VersionMajor>2</VersionMajor>
-      <VersionMinor>0</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>primary</WrapperTool>
-      <Isolated>False</Isolated>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-    </COMReference>
-    <COMReference Include="DecalNet">
-      <Guid>{572B87C4-93BD-46B3-A291-CD58181D25DC}</Guid>
-      <VersionMajor>2</VersionMajor>
-      <VersionMinor>0</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>primary</WrapperTool>
-      <Isolated>False</Isolated>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-    </COMReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

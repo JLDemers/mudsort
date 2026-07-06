@@ -50,9 +50,11 @@ It will really save you a lot of time!
 	<dd>The String to use when Sorting. Can be typed in manually or build on the `Build` tab</dd>
 	<dt>5. Object Class Filter</dt>
 	<dd>Use this to only sort a particular type of item, like Armor/Notes/Gems/Salvage/etc</dd>
-	<dt>6. Progress Bar</dt>
+	<dt>6. Item Name Filter</dt>
+	<dd>Use this to only sort items whose names contain matching text, such as epic, key, or pyreal</dd>
+	<dt>7. Progress Bar</dt>
 	<dd>Items need to be identified before they are sorted, this progress bar tracks the identifying and sorting</dd>
-	<dt>7. Activate Button</dt>
+	<dt>8. Activate Button</dt>
 	<dd>Begins the sorting process, or cancels it if it's already running.</dd>
 </dl>
 
@@ -96,3 +98,5 @@ It will really save you a lot of time!
 - `/ms set flags (sort flag string)` -- sets the sort string to the given argument
 - `/ms set ocfilter (object class string)` -- sets the object class filter to the given argument (accepts partial names, such as manast for ManaStone)
 - `/ms clear ocfilter` -- clears the object class filter
+- `/ms set namefilter (item name text)` -- sets the item name filter to the given argument (case-insensitive substring match)
+- `/ms clear namefilter` -- clears the item name filter
