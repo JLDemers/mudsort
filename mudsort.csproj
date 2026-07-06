@@ -14,11 +14,19 @@
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
+  <Import Project="mudsort.local.props" Condition="Exists('mudsort.local.props')" />
   <PropertyGroup>
-    <DecalInstallDir Condition="Exists('C:\Games\Decal\Decal.Adapter.dll')">C:\Games\Decal</DecalInstallDir>
+    <DecalInstallDir Condition="'$(DecalInstallDir)' == '' and '$(DECAL_INSTALL_DIR)' != ''">$(DECAL_INSTALL_DIR)</DecalInstallDir>
+    <DecalInstallDir Condition="'$(DecalInstallDir)' == '' and Exists('$(ProgramFiles(x86))\Decal 3.0\Decal.Adapter.dll')">$(ProgramFiles(x86))\Decal 3.0</DecalInstallDir>
+    <DecalInstallDir Condition="'$(DecalInstallDir)' == '' and Exists('C:\Games\Decal\Decal.Adapter.dll')">C:\Games\Decal</DecalInstallDir>
     <DecalInstallDir Condition="'$(DecalInstallDir)' == '' and Exists('C:\Games\ThwargLauncher\Decal.Adapter.dll')">C:\Games\ThwargLauncher</DecalInstallDir>
-    <DecalPiaDir Condition="Exists('C:\Games\Decal\.NET 4.0 PIA\Decal.Interop.Core.DLL')">C:\Games\Decal\.NET 4.0 PIA</DecalPiaDir>
-    <VirindiInstallDir Condition="Exists('C:\Games\VirindiPlugins\VirindiViewService\VirindiViewService.dll')">C:\Games\VirindiPlugins\VirindiViewService</VirindiInstallDir>
+
+    <DecalPiaDir Condition="'$(DecalPiaDir)' == '' and '$(DECAL_PIA_DIR)' != ''">$(DECAL_PIA_DIR)</DecalPiaDir>
+    <DecalPiaDir Condition="'$(DecalPiaDir)' == '' and Exists('$(DecalInstallDir)\.NET 4.0 PIA\Decal.Interop.Core.DLL')">$(DecalInstallDir)\.NET 4.0 PIA</DecalPiaDir>
+    <DecalPiaDir Condition="'$(DecalPiaDir)' == '' and Exists('C:\Games\Decal\.NET 4.0 PIA\Decal.Interop.Core.DLL')">C:\Games\Decal\.NET 4.0 PIA</DecalPiaDir>
+
+    <VirindiInstallDir Condition="'$(VirindiInstallDir)' == '' and '$(VIRINDI_INSTALL_DIR)' != ''">$(VIRINDI_INSTALL_DIR)</VirindiInstallDir>
+    <VirindiInstallDir Condition="'$(VirindiInstallDir)' == '' and Exists('C:\Games\VirindiPlugins\VirindiViewService\VirindiViewService.dll')">C:\Games\VirindiPlugins\VirindiViewService</VirindiInstallDir>
     <VirindiInstallDir Condition="'$(VirindiInstallDir)' == '' and Exists('C:\Games\ThwargLauncher\VirindiViewService.dll')">C:\Games\ThwargLauncher</VirindiInstallDir>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -140,6 +148,11 @@
     </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="ValidateLocalReferences" BeforeTargets="ResolveReferences">
+    <Error Condition="!Exists('$(DecalInstallDir)\Decal.Adapter.dll')" Text="Decal.Adapter.dll not found. Set DecalInstallDir in mudsort.local.props or DECAL_INSTALL_DIR in your environment." />
+    <Error Condition="!Exists('$(DecalPiaDir)\Decal.Interop.Core.DLL')" Text="Decal interop PIAs not found. Set DecalPiaDir in mudsort.local.props or DECAL_PIA_DIR in your environment." />
+    <Error Condition="!Exists('$(VirindiInstallDir)\VirindiViewService.dll')" Text="VirindiViewService.dll not found. Set VirindiInstallDir in mudsort.local.props or VIRINDI_INSTALL_DIR in your environment." />
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

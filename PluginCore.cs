@@ -580,6 +580,8 @@ public class PluginCore : PluginBase
             Util.WriteToChat("Clearing Item Name Filter.");
             namefilter = "";
             MainView.edtNameFilter.Text = "";
+            Properties.Settings.Default.NameFilter = "";
+            Properties.Settings.Default.Save();
             return true;
         }
 
@@ -589,6 +591,8 @@ public class PluginCore : PluginBase
             Util.WriteToChat("Setting Item Name Filter: " + msCommand);
             namefilter = msCommand;
             MainView.edtNameFilter.Text = msCommand;
+            Properties.Settings.Default.NameFilter = msCommand;
+            Properties.Settings.Default.Save();
             return true;
         }
 

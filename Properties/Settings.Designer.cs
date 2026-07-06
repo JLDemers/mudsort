@@ -94,6 +94,18 @@ namespace mudsort.Properties {
                 this["SavedSortString3"] = value;
             }
         }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string NameFilter {
+            get {
+                return ((string)(this["NameFilter"]));
+            }
+            set {
+                this["NameFilter"] = value;
+            }
+        }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <PropertyGroup>
+    <!-- Copy this file to mudsort.local.props and edit the paths for your machine. -->
+    <DecalInstallDir>C:\Games\Decal</DecalInstallDir>
+    <DecalPiaDir>C:\Games\Decal\.NET 4.0 PIA</DecalPiaDir>
+    <VirindiInstallDir>C:\Games\VirindiPlugins\VirindiViewService</VirindiInstallDir>
+  </PropertyGroup>
+</Project>

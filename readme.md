@@ -30,6 +30,16 @@ Mudsort is a VERY powerful sorting plugin for Decal. Some example uses:
    - If you don't have this, you are missing **Step #3** from Requirements
 4. Start Asheron's Call and enjoy!
 
+## Building From Source
+
+This fork supports local dependency overrides so it can be built on different Windows machines without editing `mudsort.csproj` directly.
+
+1. Copy `mudsort.local.props.example` to `mudsort.local.props`
+2. Update the Decal, Decal .NET 4.0 PIA, and VirindiViewService paths for your machine
+3. Build the `Release|x86` configuration
+
+You can also provide the same locations through the `DECAL_INSTALL_DIR`, `DECAL_PIA_DIR`, and `VIRINDI_INSTALL_DIR` environment variables.
+
 ## Plugin Usage
 
 The best way to find out how to use the plugin is log in and play with it (there are tooltips for everything, so it kind of explains as you go).

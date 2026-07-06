@@ -107,11 +107,13 @@ class MainView : IDisposable
         {
             View.UserResizeable = true;
 
+            PluginCore.getInstance().namefilter = Properties.Settings.Default.NameFilter;
+
             chkIdentifyOnLogin.Checked = Properties.Settings.Default.IdentifyOnLogin;
             chkThinkWhenDone.Checked   = Properties.Settings.Default.ThinkWhenDone;
             chkReverseSortList.Checked = Properties.Settings.Default.ReverseSortList;
             edtSortString.Text         = Properties.Settings.Default.DefaultSortString;
-            edtNameFilter.Text         = PluginCore.getInstance().namefilter;
+            edtNameFilter.Text         = Properties.Settings.Default.NameFilter;
             edtSavedSortString1.Text   = Properties.Settings.Default.SavedSortString1;
             edtSavedSortString2.Text   = Properties.Settings.Default.SavedSortString2;
             edtSavedSortString3.Text   = Properties.Settings.Default.SavedSortString3;
@@ -164,7 +166,10 @@ class MainView : IDisposable
 
             View["edtNameFilter"].KeyEvent += (s, e) =>
             {
-                PluginCore.getInstance().namefilter = ((HudTextBox)View["edtNameFilter"]).Text.Trim();
+                string value = ((HudTextBox)View["edtNameFilter"]).Text.Trim();
+                PluginCore.getInstance().namefilter = value;
+                Properties.Settings.Default.NameFilter = value;
+                Properties.Settings.Default.Save();
             };
             
             View["btnCopySortString"].Hit += (s, e) =>
