@@ -59,7 +59,7 @@ It will really save you a lot of time!
 	<dt>4. Sort String</dt>
 	<dd>The String to use when Sorting. Can be typed in manually or build on the `Build` tab</dd>
 	<dt>5. Object Class Filter</dt>
-	<dd>Use this to only sort a particular type of item, like Armor/Notes/Gems/Salvage/etc</dd>
+	<dd>Use this to only sort a particular type of item, like Armor/Notes/Gems/Salvage/etc. The Custom Name option defers filtering to the Item Name Filter box.</dd>
 	<dt>6. Item Name Filter</dt>
 	<dd>Use this to only sort items whose names contain matching text, such as epic, key, or pyreal</dd>
 	<dt>7. Progress Bar</dt>

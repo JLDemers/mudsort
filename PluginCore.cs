@@ -169,7 +169,7 @@ public class PluginCore : PluginBase
         ArrayList filteredSortList = new ArrayList();
         foreach (WorldObject worldObject in sortList)
         {
-            if (MatchesNameFilter(worldObject, false))
+            if (GetItemName(worldObject).IndexOf(namefilter, StringComparison.OrdinalIgnoreCase) >= 0)
             {
                 filteredSortList.Add(worldObject);
             }
@@ -306,18 +306,7 @@ public class PluginCore : PluginBase
 
                     if (identifyStallFrames > 180)
                     {
-                        ArrayList identifiedOnly = new ArrayList();
-                        foreach (WorldObject worldObject in sortList)
-                        {
-                            if (worldObject.HasIdData)
-                            {
-                                identifiedOnly.Add(worldObject);
-                            }
-                        }
-
-                        int skipped = sortList.Count - identifiedOnly.Count;
-                        sortList = identifiedOnly;
-                        Util.WriteToChat("Identify stalled. Skipping " + skipped + " item(s) without ID data.");
+                        Util.WriteToChat("Identify stalled. Proceeding with available item data.");
 
                         ApplyIdentifiedNameFilter();
                         MainView.prgProgressBar.Max = sortList.Count;
