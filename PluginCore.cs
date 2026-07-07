@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Linq;
 
 using Decal.Adapter;
 using Decal.Adapter.Wrappers;
@@ -205,7 +206,7 @@ public class PluginCore : PluginBase
                     {
                         foreach (WorldObject o in Core.WorldFilter.GetByContainer(obj.Id))
                         {
-                            Core.IDQueue.AddToQueue(obj.Id);
+                            Core.IDQueue.AddToQueue(o.Id);
                         }
                     }
                     Core.IDQueue.AddToQueue(obj.Id);
@@ -268,12 +269,13 @@ public class PluginCore : PluginBase
                 bool identifying = false;
                 MainView.prgProgressBar.Max = sortList.Count;
                 MainView.prgProgressBar.PreText = "identifying...";
-                foreach (WorldObject obj in sortList)
+                for (int i = 0; i < sortList.Count; i++)
                 {
+                    WorldObject obj = (WorldObject)sortList[i];
                     if (!obj.HasIdData)
                     {
                         identifying = true;
-                        MainView.prgProgressBar.Position = sortList.IndexOf(obj) + 1;
+                        MainView.prgProgressBar.Position = i + 1;
                         break;
                     }
                 }
@@ -288,53 +290,52 @@ public class PluginCore : PluginBase
             else if (CURRENT_STATE == State.BUILDING_LIST)
             {
                 MainView.prgProgressBar.PreText = "building list...";
-                System.Collections.ArrayList sortValueList = new System.Collections.ArrayList();
-                //Util.DebugWrite("# of sortflags = " + sortFlags.Count);
-                for (int i = sortFlags.Count - 1; i >= 0; i--)
+                List<WorldObject> sortableItems = sortList.Cast<WorldObject>().ToList();
+                Dictionary<SortFlag, Dictionary<int, string>> metricCache = new Dictionary<SortFlag, Dictionary<int, string>>();
+                AlphanumComparator comparator = new AlphanumComparator();
+
+                foreach (SortFlag sf in sortFlags)
                 {
-                    SortFlag sf = (SortFlag)sortFlags[i];
-                    foreach (WorldObject worldObject in sortList)
+                    Dictionary<int, string> values = new Dictionary<int, string>();
+                    foreach (WorldObject worldObject in sortableItems)
                     {
-                        String sortMetric = sf.valueOf(worldObject);
-                        //Util.DebugWrite("adding WorldObject = "+worldObject.Name+" / sortMetric = "+ sortMetric);
-                        if (!sortValueList.Contains(sortMetric))
-                        {
-                            sortValueList.Add(sortMetric);
-                        }
+                        values[worldObject.Id] = sf.valueOf(worldObject);
                     }
-                    //Util.DebugWrite("Sorting List...");
-                    sortValueList.Sort(new AlphanumComparator());
-                    //Util.DebugWrite("List Sorted.");
-                    System.Collections.ArrayList newSortList = new System.Collections.ArrayList();
-                    if (sf.descending)
-                    {
-                        sortValueList.Reverse();
-                    }
-                    //Util.DebugWrite("Starting to Iterate through sorted sortValueList");
-                    foreach (Object sortValue in sortValueList)
-                    {
-                        foreach (WorldObject worldObject in sortList)
-                        {
-                            String sortMetric = sf.valueOf(worldObject);
-                            if (sortMetric.Equals(sortValue))
-                            {
-                                newSortList.Add(worldObject);
-                            }
-                        }
-                    }
-                    sortList = newSortList;
-                    if (i == 0)
-                    {
-                        if (Properties.Settings.Default.ReverseSortList)
-                        {
-                            sortList.Reverse();
-                        }
-                        foreach (WorldObject worldObject in sortList)
-                        {
-                            sortQueue.Enqueue(worldObject);
-                        }
-                    }
+                    metricCache[sf] = values;
                 }
+
+                sortableItems.Sort((left, right) =>
+                {
+                    for (int i = 0; i < sortFlags.Count; i++)
+                    {
+                        SortFlag sf = (SortFlag)sortFlags[i];
+                        int result = comparator.Compare(metricCache[sf][left.Id], metricCache[sf][right.Id]);
+                        if (sf.descending)
+                        {
+                            result = -result;
+                        }
+
+                        if (result != 0)
+                        {
+                            return result;
+                        }
+                    }
+
+                    return 0;
+                });
+
+                if (Properties.Settings.Default.ReverseSortList)
+                {
+                    sortableItems.Reverse();
+                }
+
+                sortList = new ArrayList(sortableItems);
+                sortQueue.Clear();
+                foreach (WorldObject worldObject in sortableItems)
+                {
+                    sortQueue.Enqueue(worldObject);
+                }
+
                 Util.WriteToChat(sortQueue.Count + " items in queue...");
                 CURRENT_STATE = State.MOVING_ITEMS;
                 MainView.prgProgressBar.PreText = "working...";
