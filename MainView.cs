@@ -120,14 +120,14 @@ class MainView : IDisposable
 
             ((HudCombo)View["cmbObjClassFilters"]).Change += (s, e) =>
             {
-                //Util.WriteToChat("changing combo object class filter: " + cmbObjClassFilters[cmbObjClassFilters.Current].Name);
-                if (((HudStaticText)cmbObjClassFilters[cmbObjClassFilters.Current]).Text.Equals("None"))
+                string selectedText = ((HudStaticText)cmbObjClassFilters[cmbObjClassFilters.Current]).Text;
+                if (selectedText.Equals("None"))
                 {
                     PluginCore.getInstance().ocfilter = "";
                 }
-                if (!((HudStaticText)cmbObjClassFilters[cmbObjClassFilters.Current]).Text.Equals("Custom"))
+                else if (!selectedText.Equals("Custom") && !selectedText.Equals("Custom Name") && !selectedText.StartsWith("#"))
                 {
-                    PluginCore.getInstance().ocfilter = ((HudStaticText)cmbObjClassFilters[cmbObjClassFilters.Current]).Text;
+                    PluginCore.getInstance().ocfilter = selectedText;
                 }
             };
 

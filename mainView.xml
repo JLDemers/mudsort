@@ -50,6 +50,7 @@
         <option text="Misc"/>
         <option text="Unknown"/>
 		<option text="Custom"/>
+    		<option text="Custom Name"/>
       </control>
 
       <control progid="DecalControls.StaticText"                            left="5"    top="180" width="95"  height="20" text="Item Name Filter" />

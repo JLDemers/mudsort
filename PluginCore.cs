@@ -110,8 +110,19 @@ public class PluginCore : PluginBase
 
     private bool MatchesObjectClassFilter(WorldObject worldObject)
     {
-        return MainView.cmbObjClassFilters.Current == 0
-            || worldObject.ObjectClass.ToString().StartsWith(ocfilter, StringComparison.OrdinalIgnoreCase);
+        if (MainView.cmbObjClassFilters.Current == 0)
+        {
+            return true;
+        }
+
+        string selectedText = ((HudStaticText)MainView.cmbObjClassFilters[MainView.cmbObjClassFilters.Current]).Text;
+        if (selectedText.Equals("Custom Name", StringComparison.OrdinalIgnoreCase))
+        {
+            // In Custom Name mode, item name matching is the active filter criteria.
+            return true;
+        }
+
+        return worldObject.ObjectClass.ToString().StartsWith(ocfilter, StringComparison.OrdinalIgnoreCase);
     }
 
     private bool MatchesNameFilter(WorldObject worldObject, bool includeUnidentifiedNameMatches)
@@ -610,7 +621,14 @@ public class PluginCore : PluginBase
             msCommand = msCommand.Substring("/ms set ocfilter ".Length);
             Util.WriteToChat("Setting ObjectClass Filter: " + msCommand);
             ocfilter = msCommand;
-            MainView.cmbObjClassFilters.Current = MainView.cmbObjClassFilters.Count-1;
+            for (int i = 0; i < MainView.cmbObjClassFilters.Count; i++)
+            {
+                if (((HudStaticText)MainView.cmbObjClassFilters[i]).Text.Equals("Custom"))
+                {
+                    MainView.cmbObjClassFilters.Current = i;
+                    break;
+                }
+            }
             return true;
         }
 
