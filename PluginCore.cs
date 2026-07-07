@@ -36,6 +36,8 @@ public class PluginCore : PluginBase
     private ArrayList sortFlags = new ArrayList();
     private ArrayList sortList = new ArrayList();
     private Queue sortQueue = new Queue();
+    private int lastUnidentifiedCount = -1;
+    private int identifyStallFrames = 0;
 
     public static PluginCore getInstance()
     {
@@ -53,6 +55,8 @@ public class PluginCore : PluginBase
             // Clear existing sort queues and lists
             sortQueue.Clear();
             sortList.Clear();
+            lastUnidentifiedCount = -1;
+            identifyStallFrames = 0;
 
             // Iterate through items in the specified container
             foreach (WorldObject worldObject in Core.WorldFilter.GetByContainer(containerSource))
@@ -266,7 +270,7 @@ public class PluginCore : PluginBase
             }
             else if (CURRENT_STATE == State.INITIATED)
             {
-                bool identifying = false;
+                int unidentifiedCount = 0;
                 MainView.prgProgressBar.Max = sortList.Count;
                 MainView.prgProgressBar.PreText = "identifying...";
                 for (int i = 0; i < sortList.Count; i++)
@@ -274,17 +278,52 @@ public class PluginCore : PluginBase
                     WorldObject obj = (WorldObject)sortList[i];
                     if (!obj.HasIdData)
                     {
-                        identifying = true;
-                        MainView.prgProgressBar.Position = i + 1;
-                        break;
+                        unidentifiedCount++;
+                        Core.IDQueue.AddToQueue(obj.Id);
                     }
                 }
-                if (!identifying)
+
+                MainView.prgProgressBar.Position = sortList.Count - unidentifiedCount;
+
+                if (unidentifiedCount == 0)
                 {
                     ApplyIdentifiedNameFilter();
                     MainView.prgProgressBar.Max = sortList.Count;
                     CURRENT_STATE = State.BUILDING_LIST;
                     MainView.prgProgressBar.Position = MainView.prgProgressBar.Max;
+                }
+                else
+                {
+                    if (unidentifiedCount == lastUnidentifiedCount)
+                    {
+                        identifyStallFrames++;
+                    }
+                    else
+                    {
+                        identifyStallFrames = 0;
+                        lastUnidentifiedCount = unidentifiedCount;
+                    }
+
+                    if (identifyStallFrames > 180)
+                    {
+                        ArrayList identifiedOnly = new ArrayList();
+                        foreach (WorldObject worldObject in sortList)
+                        {
+                            if (worldObject.HasIdData)
+                            {
+                                identifiedOnly.Add(worldObject);
+                            }
+                        }
+
+                        int skipped = sortList.Count - identifiedOnly.Count;
+                        sortList = identifiedOnly;
+                        Util.WriteToChat("Identify stalled. Skipping " + skipped + " item(s) without ID data.");
+
+                        ApplyIdentifiedNameFilter();
+                        MainView.prgProgressBar.Max = sortList.Count;
+                        CURRENT_STATE = State.BUILDING_LIST;
+                        MainView.prgProgressBar.Position = MainView.prgProgressBar.Max;
+                    }
                 }
             }
             else if (CURRENT_STATE == State.BUILDING_LIST)
